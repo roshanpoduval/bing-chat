@@ -3,7 +3,8 @@ import crypto from 'node:crypto'
 import WebSocket from 'ws'
 
 import * as types from './types'
-import { fetch } from './fetch'
+// import { fetch } from './fetch'
+import fetch from "node-fetch";
 
 const terminalChar = ''
 
