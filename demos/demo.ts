@@ -1,5 +1,3 @@
-#!/usr/bin/env tsx
-
 import dotenv from 'dotenv-safe'
 import { oraPromise } from 'ora'
 
@@ -7,13 +5,6 @@ import { BingChat } from '../src'
 import { createRequire } from 'module';
 
 dotenv.config()
-
-async function getInput() {
-  const require = createRequire(import.meta.url);
-  const prsy = require('prompt-sync')();
-  var prompt = prsy("Enter your Bing Chat AI Query: ");
-  return prompt
-}
 
 /**
  * Demo CLI for testing basic functionality.
@@ -24,17 +15,24 @@ async function getInput() {
  */
 async function main() {
   const api = new BingChat({ cookie: process.env.BING_COOKIE })
-
-  const prompt = "Hi Bing"
-  console.log('argv:', process.argv.slice(2))
-  console.log(process.argv.slice(2))
-  console.log()
-  // console.log(prompt)
-
-  const res = await oraPromise(api.sendMessage(process.argv.slice(2)[0]), {
-    text: process.argv.slice(2)[0]
-  })
-  console.log(res.text)
+  // const api = new BingChat({ cookie: BING_COOKIE })
+  var console_string = '';
+  for (let i = 2; i < process.argv.length ; i++) {
+    var result;
+    if (i==2) {
+      result = await oraPromise(api.sendMessage(process.argv.slice(i)[0]), {
+        text: process.argv.slice(i)[0]
+      })
+    } else {
+      result = await oraPromise(api.sendMessage(result.text + "\n" + process.argv.slice(i)[0]), {
+        text: result.text + "\n" + process.argv.slice(i)[0]
+      })
+    }
+    // console.log(result.text)
+    console_string+= "\n" + result.text
+  }
+  console.log("<=============================>")
+  // console.log(console_string)
 }
 
 main().catch((err) => {
