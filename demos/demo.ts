@@ -10,8 +10,45 @@ var console_string = '';
 var result;
 var prompt = '';
 var int_mode = 0;
-if (process.argv.slice(2)[0]=='-i') {
-  int_mode = 1
+var debug_mode = 0;
+var style_mode = "";
+var cookie_counter = 0;
+
+for (let i = 2; i < process.argv.length ; i++) {
+  switch(process.argv.slice(i)[0]) { 
+    case "-c": { 
+      style_mode = "&cdxtone=Creative"
+      break; 
+    } 
+    case "-p": { 
+      style_mode = "&cdxtone=Precise"
+      break; 
+    } 
+    case "-i": { 
+      int_mode = 1
+      break; 
+    } 
+    case "-d": { 
+      int_mode = 1
+      break; 
+    } 
+    // default: { 
+    //   style_mode = ""
+    //   break; 
+    // } 
+  }
+  if (process.argv.slice(i)[0]=='-i') {
+    int_mode = 1
+  } 
+  if (process.argv.slice(i)[0]=='-d') {
+    debug_mode = 1
+  } 
+  if (process.argv.slice(i)[0]=='-c') {
+    style_mode = "c"
+  } 
+  if (process.argv.slice(i)[0]=='-p') {
+    style_mode = "p"
+  } 
 }
 
 async function clean_prompt(dirty_prompt) {
@@ -20,6 +57,17 @@ async function clean_prompt(dirty_prompt) {
 
 async function clean_result(dirty_result) {
   return dirty_result.replace("Hello, this is Bing. ","")
+}
+
+async function get_cookie() {
+  let output = BING_COOKIE + style_mode;
+  // let output = BING_COOKIES[cookie_counter] + style_mode;
+  if (debug_mode==1) { console.log("DEBUG: cookie_counter==" + cookie_counter); }
+  cookie_counter+=1
+  if (cookie_counter>=BING_COOKIES.length) {
+    cookie_counter = 0
+  }
+  return output
 }
 
 async function chat(api, new_prompt, int_mode) {
@@ -43,7 +91,8 @@ async function chat(api, new_prompt, int_mode) {
  */
 async function main() {
   // const api = new BingChat({ cookie: process.env.BING_COOKIE })
-  const api = new BingChat({ cookie: BING_COOKIE })
+  let my_cookie = await get_cookie()
+  const api = new BingChat({ cookie: my_cookie })
 
   if (process.argv.slice(2)[0]=='-i') {
     var stdin = process.openStdin();
